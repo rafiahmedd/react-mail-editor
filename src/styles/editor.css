@@ -1,0 +1,393 @@
+/*
+ * react-mail-editor stylesheet.
+ *
+ * ---------------------------------------------------------------------------
+ * Isolation strategy — this matters, because the editor is meant to be dropped
+ * into hostile hosts (WordPress admin, Laravel Nova, Django admin) whose global
+ * stylesheets restyle `button`, `input` and `*` with no regard for your widget.
+ *
+ * 1. Tailwind's preflight is NOT imported. We never touch the host's elements.
+ * 2. Every utility is namespaced with the `rme:` prefix, so class names cannot
+ *    collide with the host's.
+ * 3. Utilities are emitted UNLAYERED and with `!important`. Cascade layers lose
+ *    to unlayered rules, so a layered utility would be beaten by a plain
+ *    `button { padding: 20px }` in the host theme. Unlayered + important means
+ *    a utility (specificity 0,1,0 + important) beats host element rules even
+ *    when the host uses `!important` itself.
+ * 4. A scoped reset under `.rme-root` / `.rme-portal` (specificity 0,1,1)
+ *    neutralises host styles for the elements we do not explicitly style. It is
+ *    also unlayered, so it outranks the host, and it loses to our own utilities
+ *    because those are important — which is exactly the order we want.
+ * ---------------------------------------------------------------------------
+ */
+
+@import 'tailwindcss/theme.css' prefix(rme);
+@import 'tailwindcss/utilities.css' prefix(rme) important;
+
+@source "../";
+
+/* Dark mode is driven by a class on the editor root, not the OS. */
+@custom-variant dark (&:where(.rme-dark, .rme-dark *));
+
+/* ------------------------------------------------------------------ */
+/* Design tokens                                                       */
+/* ------------------------------------------------------------------ */
+
+@theme inline {
+  --color-canvas: var(--rme-ui-canvas);
+  --color-panel: var(--rme-ui-panel);
+  --color-rail: var(--rme-ui-rail);
+  --color-header: var(--rme-ui-header);
+  --color-line: var(--rme-ui-line);
+  --color-ink: var(--rme-ui-ink);
+  --color-subtle: var(--rme-ui-subtle);
+  --color-faint: var(--rme-ui-faint);
+  --color-brand: var(--rme-ui-brand);
+  --color-brand-soft: var(--rme-ui-brand-soft);
+  --color-on-brand: var(--rme-ui-on-brand);
+  --color-hover: var(--rme-ui-hover);
+  --color-active: var(--rme-ui-active);
+  --color-danger: var(--rme-ui-danger);
+  --color-danger-soft: var(--rme-ui-danger-soft);
+  --color-ring: var(--rme-ui-ring);
+
+  --font-ui: var(--rme-ui-font-sans);
+  --radius-ui: var(--rme-ui-radius);
+}
+
+/* ------------------------------------------------------------------ */
+/* Instance-scoped variables. Override any of these with the `theme`   */
+/* prop or by setting them on a `.rme-root` ancestor.                  */
+/* ------------------------------------------------------------------ */
+
+.rme-root,
+.rme-portal {
+  --rme-ui-font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --rme-ui-font-size: 13px;
+  --rme-ui-radius: 0.5rem;
+
+  --rme-ui-canvas: #f1f5f9;
+  --rme-ui-panel: #ffffff;
+  --rme-ui-rail: #f8fafc;
+  --rme-ui-header: #ffffff;
+  --rme-ui-line: #e2e8f0;
+  --rme-ui-ink: #0f172a;
+  --rme-ui-subtle: #475569;
+  --rme-ui-faint: #94a3b8;
+  --rme-ui-brand: #4f46e5;
+  --rme-ui-brand-soft: #eef2ff;
+  --rme-ui-on-brand: #ffffff;
+  --rme-ui-hover: #f1f5f9;
+  --rme-ui-active: #e2e8f0;
+  --rme-ui-danger: #dc2626;
+  --rme-ui-danger-soft: #fef2f2;
+  --rme-ui-ring: #6366f1;
+
+  color-scheme: light;
+}
+
+.rme-root.rme-dark,
+.rme-portal.rme-dark {
+  --rme-ui-canvas: #0b1120;
+  --rme-ui-panel: #111827;
+  --rme-ui-rail: #0f172a;
+  --rme-ui-header: #111827;
+  --rme-ui-line: #1f2937;
+  --rme-ui-ink: #f1f5f9;
+  --rme-ui-subtle: #cbd5e1;
+  --rme-ui-faint: #64748b;
+  --rme-ui-brand: #6366f1;
+  --rme-ui-brand-soft: #1e1b4b;
+  --rme-ui-on-brand: #ffffff;
+  --rme-ui-hover: #1e293b;
+  --rme-ui-active: #334155;
+  --rme-ui-danger: #f87171;
+  --rme-ui-danger-soft: #2a1414;
+  --rme-ui-ring: #818cf8;
+
+  color-scheme: dark;
+}
+
+/* ------------------------------------------------------------------ */
+/* Scoped reset — protects the editor from the host's stylesheet.      */
+/* Deliberately unlayered so it outranks unlayered host element rules. */
+/* ------------------------------------------------------------------ */
+
+.rme-root,
+.rme-portal {
+  font-family: var(--rme-ui-font-sans);
+  font-size: var(--rme-ui-font-size);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: var(--rme-ui-ink);
+  text-align: left;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.rme-root *,
+.rme-root *::before,
+.rme-root *::after,
+.rme-portal *,
+.rme-portal *::before,
+.rme-portal *::after {
+  box-sizing: border-box;
+  border: 0 solid var(--rme-ui-line);
+  outline-offset: 0;
+}
+
+/*
+ * Form controls are where hosts do the most damage, and WordPress in
+ * particular reaches for `!important`. These rules therefore need importance
+ * too — but they must still lose to our own utilities, which are important at
+ * specificity (0,1,0).
+ *
+ * `:where(...)` contributes nothing, and `:not(a)` adds one element unit, so
+ * the selector below lands at (0,0,2): above a host's `button { … !important }`
+ * (0,0,1), and below any `rme:` utility class (0,1,0). That is exactly the
+ * ordering we want, and it is the only gap available in the specificity space.
+ */
+:where(.rme-root, .rme-portal) :is(button, input, select, textarea):not(a) {
+  font: inherit !important;
+  color: inherit !important;
+  letter-spacing: inherit !important;
+  line-height: inherit !important;
+  text-transform: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  height: auto !important;
+  width: auto !important;
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 solid var(--rme-ui-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+:where(.rme-root, .rme-portal) button:not(a) {
+  cursor: pointer !important;
+  text-align: inherit !important;
+  vertical-align: baseline !important;
+}
+
+.rme-root button:focus,
+.rme-portal button:focus,
+.rme-root input:focus,
+.rme-portal input:focus,
+.rme-root textarea:focus,
+.rme-portal textarea:focus {
+  outline: none;
+}
+
+.rme-root input[type='checkbox'],
+.rme-root input[type='radio'],
+.rme-portal input[type='checkbox'],
+.rme-portal input[type='radio'] {
+  -webkit-appearance: auto;
+  appearance: auto;
+}
+
+.rme-root input[type='color'],
+.rme-portal input[type='color'] {
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
+  border: 0;
+}
+.rme-root input[type='color']::-webkit-color-swatch-wrapper,
+.rme-portal input[type='color']::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.rme-root input[type='color']::-webkit-color-swatch,
+.rme-portal input[type='color']::-webkit-color-swatch {
+  border: 0;
+  border-radius: 4px;
+}
+
+.rme-root h1,
+.rme-root h2,
+.rme-root h3,
+.rme-root h4,
+.rme-root h5,
+.rme-root h6,
+.rme-root p,
+.rme-root figure,
+.rme-root blockquote,
+.rme-portal h1,
+.rme-portal h2,
+.rme-portal h3,
+.rme-portal h4,
+.rme-portal p {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+.rme-root ul,
+.rme-root ol,
+.rme-portal ul,
+.rme-portal ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rme-root img,
+.rme-root svg,
+.rme-root video,
+.rme-root canvas,
+.rme-portal img,
+.rme-portal svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+.rme-root a,
+.rme-portal a {
+  color: inherit;
+  text-decoration: inherit;
+  background-color: transparent;
+}
+
+.rme-root table,
+.rme-portal table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: auto;
+  margin: 0;
+}
+.rme-root th,
+.rme-root td,
+.rme-portal th,
+.rme-portal td {
+  padding: 0;
+  text-align: inherit;
+  border: 0;
+}
+
+.rme-root label,
+.rme-portal label {
+  display: inline-block;
+  margin: 0;
+  font-weight: inherit;
+}
+
+.rme-root hr,
+.rme-portal hr {
+  border: 0;
+  border-top: 1px solid var(--rme-ui-line);
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Utility hooks used by components                                    */
+/* ------------------------------------------------------------------ */
+
+.rme-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--rme-ui-active) transparent;
+}
+.rme-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.rme-scroll::-webkit-scrollbar-thumb {
+  background: var(--rme-ui-active);
+  border-radius: 9999px;
+}
+.rme-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@keyframes rme-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rme-animate-in {
+  animation: rme-fade-up 0.16s ease-out;
+}
+
+/* ------------------------------------------------------------------ */
+/* Canvas. The email preview must look like the exported email, so the */
+/* reset above is deliberately undone for typographic elements here.   */
+/* ------------------------------------------------------------------ */
+
+.rme-canvas-doc a {
+  text-decoration: none;
+}
+.rme-canvas-doc p {
+  margin: 0;
+}
+.rme-canvas-doc strong,
+.rme-canvas-doc b {
+  font-weight: 700;
+}
+.rme-canvas-doc em,
+.rme-canvas-doc i {
+  font-style: italic;
+}
+.rme-canvas-doc u {
+  text-decoration: underline;
+}
+.rme-canvas-doc s {
+  text-decoration: line-through;
+}
+.rme-canvas-doc ul,
+.rme-canvas-doc ol {
+  margin: 0 0 0 1.25em;
+  padding: 0;
+}
+.rme-canvas-doc ul {
+  list-style-type: disc;
+}
+.rme-canvas-doc ol {
+  list-style-type: decimal;
+}
+.rme-canvas-doc li {
+  display: list-item;
+}
+
+/* Tiptap */
+.rme-rte .ProseMirror {
+  outline: none;
+  min-height: 1em;
+  white-space: pre-wrap;
+}
+.rme-rte .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--rme-ui-faint);
+  pointer-events: none;
+  height: 0;
+}
+
+/* Merge-variable chip */
+.rme-var-chip {
+  display: inline-block;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--rme-ui-brand-soft);
+  color: var(--rme-ui-brand);
+  font-size: 0.9em;
+  font-weight: 600;
+  white-space: nowrap;
+}

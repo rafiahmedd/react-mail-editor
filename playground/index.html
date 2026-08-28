@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>react-mail-editor · playground</title>
+    <style>
+      html,
+      body,
+      #root {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+      }
+      /* Deliberately hostile host styles — proves the editor is isolated. */
+      button {
+        background: hotpink !important;
+        border: 3px dotted lime;
+        padding: 20px;
+        font-size: 22px;
+        text-transform: uppercase;
+      }
+      input,
+      textarea,
+      select {
+        border: 3px solid orange;
+        padding: 14px;
+        font-size: 20px;
+      }
+      * {
+        box-sizing: content-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>
