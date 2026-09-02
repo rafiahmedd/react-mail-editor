@@ -8,6 +8,7 @@ import { cell, esc, resolveVariables, safeUrl, stripTags } from '@/lib/html'
 import { borderCss, padding } from '@/lib/style'
 import { spacingGroup } from './common'
 import { registerFont } from './text'
+import { placeholderImage } from '@/lib/placeholder'
 
 export type ProductLayout = 'stacked' | 'side'
 
@@ -196,7 +197,7 @@ export const productBlock = defineBlock<ProductValues>({
   keywords: ['shop', 'ecommerce', 'item', 'price', 'buy', 'card'],
   description: 'Image, copy, price and a call to action in one card.',
   defaultValues: () => ({
-    image: 'https://placehold.co/600x600/e2e8f0/64748b/png?text=Product',
+    image: placeholderImage(600, 600, 'Product'),
     title: 'Merino crew sweater',
     description: 'Lightweight, breathable and machine washable — in four new colours.',
     price: '$89.00',

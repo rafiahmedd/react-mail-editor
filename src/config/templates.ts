@@ -4,6 +4,7 @@ import { SCHEMA_VERSION } from '@/types/schema'
 import { box, createBody, createColumn, createRow, noBorder, noBgImage } from './defaults'
 import { DEFAULT_FONT } from './fonts'
 import { uid } from '@/lib/utils'
+import { iconDataUri, placeholderImage } from '@/lib/placeholder'
 
 type Block = { id: string; type: string; values: Record<string, unknown> }
 
@@ -226,7 +227,7 @@ export const BUILTIN_TEMPLATES: TemplateEntry[] = [
         },
         {
           cells: [12],
-          blocks: [[image('https://placehold.co/1200x600/e2e8f0/64748b/png?text=Featured')]],
+          blocks: [[image(placeholderImage(1200, 600, 'Featured'))]],
         },
         {
           cells: [12],
@@ -245,7 +246,7 @@ export const BUILTIN_TEMPLATES: TemplateEntry[] = [
           padding: [8, 24, 8, 24],
           blocks: [
             [
-              image('https://placehold.co/600x400/e2e8f0/64748b/png?text=Story', {
+              image(placeholderImage(600, 400, 'Story'), {
                 borderRadius: 8,
               }),
               heading('Customer story', { fontSize: 17, padding: box(12, 8, 4, 8) }),
@@ -255,7 +256,7 @@ export const BUILTIN_TEMPLATES: TemplateEntry[] = [
               }),
             ],
             [
-              image('https://placehold.co/600x400/e2e8f0/64748b/png?text=Guide', {
+              image(placeholderImage(600, 400, 'Guide'), {
                 borderRadius: 8,
               }),
               heading('New guide', { fontSize: 17, padding: box(12, 8, 4, 8) }),
@@ -392,17 +393,17 @@ export const BUILTIN_TEMPLATES: TemplateEntry[] = [
               el('icons', {
                 items: [
                   {
-                    icon: 'https://api.iconify.design/lucide/zap.svg?color=%234f46e5',
+                    icon: iconDataUri('zap'),
                     title: 'Twice as fast',
                     text: 'Every interaction now lands in under 100 ms.',
                   },
                   {
-                    icon: 'https://api.iconify.design/lucide/smartphone.svg?color=%234f46e5',
+                    icon: iconDataUri('smartphone'),
                     title: 'Mobile overrides',
                     text: 'Fine-tune spacing and type for small screens.',
                   },
                   {
-                    icon: 'https://api.iconify.design/lucide/shield-check.svg?color=%234f46e5',
+                    icon: iconDataUri('shield-check'),
                     title: 'Safer exports',
                     text: 'URLs and raw HTML are sanitised automatically.',
                   },

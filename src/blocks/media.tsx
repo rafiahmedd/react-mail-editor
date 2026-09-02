@@ -111,7 +111,7 @@ export const imageBlock = defineBlock<ImageValues>({
   group: 'media',
   keywords: ['picture', 'photo', 'banner', 'logo'],
   defaultValues: () => ({
-    src: 'https://placehold.co/1200x600/e2e8f0/64748b/png?text=Your+image',
+    src: '',
     alt: '',
     width: 552,
     autoWidth: true,
@@ -382,7 +382,7 @@ export const videoBlock = defineBlock<VideoValues>({
   keywords: ['youtube', 'vimeo', 'movie', 'play'],
   description: 'Clickable thumbnail — email clients cannot embed real video.',
   defaultValues: () => ({
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    url: '', // ponytail: empty so inserting the block fetches no thumbnail; the dark placeholder shows until an author pastes a URL
     thumbnail: '',
     alt: 'Watch the video',
     width: 552,

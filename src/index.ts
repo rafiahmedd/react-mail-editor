@@ -32,6 +32,8 @@ export type { ExportHtmlOptions, CompatIssue } from './export/exportHtml'
 /* Config + factories */
 export { createDesign, createRow, createColumn, createBody, box, LAYOUT_PRESETS } from './config/defaults'
 export { BUILTIN_TEMPLATES } from './config/templates'
+export { placeholderImage, iconDataUri } from './lib/placeholder'
+export type { PlaceholderIcon } from './lib/placeholder'
 export { FONTS, DEFAULT_FONT, FONT_WEIGHTS } from './config/fonts'
 export { SOCIAL_NETWORKS } from './config/social'
 export { migrate } from './store/editorStore'

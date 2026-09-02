@@ -1,8 +1,10 @@
+import { SOCIAL_ICON_PATHS } from './socialIcons'
+
 export interface SocialNetwork {
   id: string
   label: string
   color: string
-  /** Simple Icons slug — resolved to an SVG CDN URL. */
+  /** Simple Icons slug — keys into the inlined glyph paths. */
   slug: string
   placeholder: string
 }
@@ -33,11 +35,21 @@ export function findNetwork(id: string): SocialNetwork | undefined {
   return SOCIAL_NETWORKS.find((n) => n.id === id)
 }
 
-/** White glyph on the brand colour, served from the Simple Icons CDN. */
-export function networkIconUrl(id: string): string {
+/**
+ * The network glyph as an inline SVG data URI, tinted to `color`.
+ *
+ * This used to be a `cdn.simpleicons.org` URL, which meant the editor hit that
+ * CDN on every paint and every exported email handed each recipient's IP and
+ * open-time to it. Nothing is fetched now.
+ */
+export function networkIconUrl(id: string, color = '#ffffff'): string {
   const net = findNetwork(id)
-  if (!net) return ''
-  return `https://cdn.simpleicons.org/${net.slug}/white`
+  const path = net && SOCIAL_ICON_PATHS[net.slug]
+  if (!path) return ''
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" ` +
+    `width="24" height="24" fill="${color}"><path d="${path}"/></svg>`
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
 }
 
 export interface ResolvedSocial {

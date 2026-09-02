@@ -21,7 +21,7 @@ export function safeUrl(url: string | null | undefined, allowDataImage = false):
   if (!u) return ''
   if (!/^[a-z][a-z0-9+.-]*:/i.test(u)) return u // relative / anchor / query
   if (SAFE_SCHEME.test(u)) return u
-  if (allowDataImage && /^data:image\/(png|jpe?g|gif|webp|svg\+xml);/i.test(u)) return u
+  if (allowDataImage && /^data:image\/(png|jpe?g|gif|webp|svg\+xml)[;,]/i.test(u)) return u
   return ''
 }
 

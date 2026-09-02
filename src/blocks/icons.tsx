@@ -8,6 +8,7 @@ import { cell, esc, resolveVariables, safeUrl, stripTags } from '@/lib/html'
 import { padding } from '@/lib/style'
 import { spacingGroup, weightOptions } from './common'
 import { registerFont } from './text'
+import { iconDataUri } from '@/lib/placeholder'
 
 export interface IconListItem {
   /** Image URL for the leading icon. */
@@ -31,8 +32,8 @@ export interface IconListValues {
   [key: string]: unknown
 }
 
-/** Iconify renders real PNG/SVG images, so these survive an email client. */
-const DEFAULT_ICON = 'https://api.iconify.design/lucide/check-circle.svg?color=%234f46e5'
+/** Inline SVG — no CDN round-trip, and it still renders as a real image. */
+const DEFAULT_ICON = iconDataUri('circle-check')
 
 const inspector: InspectorSchema = [
   {

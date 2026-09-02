@@ -3,7 +3,7 @@ import { defineBlock, type BlockRenderProps } from '@/types/blocks'
 import type { BoxValue, TextAlign } from '@/types/schema'
 import type { InspectorSchema } from '@/types/inspector'
 import { box } from '@/config/defaults'
-import { findNetwork, resolveSocial } from '@/config/social'
+import { findNetwork, networkIconUrl, resolveSocial } from '@/config/social'
 import { cell, esc, safeUrl } from '@/lib/html'
 import { padding } from '@/lib/style'
 import { spacingGroup } from './common'
@@ -62,12 +62,13 @@ function radiusFor(style: SocialIconStyle, size: number): string {
 }
 
 /**
- * Built-in glyphs are served as a white icon on the brand colour. The outline
- * style has no fill, so the glyph is re-coloured to the brand colour instead.
+ * Built-in glyphs are white on the brand colour. The outline style has no fill,
+ * so the glyph is redrawn in the brand colour instead. An author-supplied icon
+ * is a URL we do not control, so it is passed through untouched.
  */
-function glyphUrl(image: string, color: string, outline: boolean, custom: boolean): string {
-  if (!outline || custom) return image
-  return image.replace(/\/white$/, `/${color.replace(/^#/, '')}`)
+function glyphUrl(network: string, image: string, color: string, outline: boolean, custom: boolean): string {
+  if (custom) return image
+  return networkIconUrl(network, outline ? color : '#ffffff')
 }
 
 function SocialRender(p: BlockRenderProps<SocialValues>) {
@@ -98,7 +99,7 @@ function SocialRender(p: BlockRenderProps<SocialValues>) {
             >
               {r.image ? (
                 <img
-                  src={glyphUrl(r.image, r.color, outline, r.isCustom)}
+                  src={glyphUrl(item.network, r.image, r.color, outline, r.isCustom)}
                   alt={r.label}
                   style={{
                     width: Math.round(v.size * 0.55),
@@ -148,7 +149,7 @@ export const socialBlock = defineBlock<SocialValues>({
         const r = resolveSocial(item)
         const href = esc(safeUrl(item.url)) || '#'
         const img = r.image
-          ? `<img src="${esc(safeUrl(glyphUrl(r.image, r.color, outline, r.isCustom), true))}" ` +
+          ? `<img src="${esc(safeUrl(glyphUrl(item.network, r.image, r.color, outline, r.isCustom), true))}" ` +
             `alt="${esc(r.label)}" width="${glyph}" height="${glyph}" ` +
             `style="display:block;border:0;outline:none;text-decoration:none;` +
             `width:${glyph}px;height:${glyph}px;" />`
