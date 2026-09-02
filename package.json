@@ -1,6 +1,6 @@
 {
   "name": "react-mail-editor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "A customizable, extensible drag-and-drop email template builder for React 19, built with shadcn/ui. Framework-agnostic: drop it into WordPress, Laravel, Django, Flask or any React app.",
   "license": "MIT",
